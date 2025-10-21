@@ -1,1 +1,0 @@
-# subjetivismo-y-pracmatismo
