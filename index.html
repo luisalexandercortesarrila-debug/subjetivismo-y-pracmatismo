@@ -1,0 +1,172 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quest: Subjetivismo y Pragmatismo</title>
+<style>
+    body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+        color: #222;
+        margin: 0;
+        padding: 0;
+    }
+    header {
+        background-color: #1e3a5f;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    main {
+        max-width: 800px;
+        margin: 30px auto;
+        background: white;
+        padding: 25px 40px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+        color: #1e3a5f;
+    }
+    button {
+        background-color: #1e3a5f;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin-top: 15px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #274d7c;
+    }
+    .question {
+        margin-bottom: 20px;
+    }
+    .hidden {
+        display: none;
+    }
+    #ranking table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    #ranking th, #ranking td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+    #ranking th {
+        background-color: #1e3a5f;
+        color: white;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Quest: Subjetivismo y Pragmatismo</h1>
+</header>
+
+<main>
+    <section id="intro">
+        <h2>Bienvenido</h2>
+        <p>Por favor, escribe tu nombre para comenzar la actividad.</p>
+        <input type="text" id="nombre" placeholder="Tu nombre" />
+        <br>
+        <button onclick="iniciar()">Comenzar Quest</button>
+    </section>
+
+    <section id="quiz" class="hidden">
+        <h2>Responde las siguientes preguntas:</h2>
+        <form id="formQuiz"></form>
+        <button onclick="finalizar()">Finalizar Quest</button>
+    </section>
+
+    <section id="resultado" class="hidden">
+        <h2>Resultado</h2>
+        <p id="mensaje"></p>
+        <div id="ranking"></div>
+    </section>
+</main>
+
+<script>
+const preguntas = [
+    { q: "¿Qué sostiene el subjetivismo sobre la verdad?", o: ["Que es universal", "Que depende del sujeto", "Que proviene de Dios"], c: 1 },
+    { q: "¿Quién dijo 'Pienso, luego existo'?", o: ["Hume", "Kant", "Descartes"], c: 2 },
+    { q: "Según Hume, el conocimiento proviene de:", o: ["La razón pura", "Las percepciones y experiencias", "Las ideas innatas"], c: 1 },
+    { q: "¿Qué dice el subjetivismo moral?", o: ["El bien y el mal son universales", "Dependen de cada persona o cultura", "No existen valores"], c: 1 },
+    { q: "Un ejemplo de subjetivismo sería:", o: ["Decir que la Tierra gira alrededor del Sol", "Opinar que una comida es mejor que otra", "Afirmar leyes físicas"], c: 1 },
+    { q: "El pragmatismo valora las ideas por su:", o: ["Belleza", "Utilidad práctica", "Origen histórico"], c: 1 },
+    { q: "El pragmatismo surgió en:", o: ["Francia", "Estados Unidos", "Alemania"], c: 1 },
+    { q: "¿Quién fue el fundador del pragmatismo?", o: ["Charles Sanders Peirce", "John Locke", "Aristóteles"], c: 0 },
+    { q: "William James decía que una creencia es verdadera si:", o: ["Nos ayuda a vivir mejor", "Es lógica", "Coincide con la religión"], c: 0 },
+    { q: "John Dewey aplicó el pragmatismo a:", o: ["La política", "La educación", "La economía"], c: 1 },
+    { q: "El subjetivismo pone énfasis en:", o: ["Las acciones", "Las emociones y percepciones personales", "Las leyes universales"], c: 1 },
+    { q: "El pragmatismo pone énfasis en:", o: ["La acción y las consecuencias", "La contemplación", "La fe"], c: 0 },
+    { q: "Ambas corrientes rechazan:", o: ["La verdad absoluta", "La razón", "La moral"], c: 0 },
+    { q: "Una crítica al subjetivismo es que:", o: ["Niega la ciencia", "Hace imposible una verdad común", "Desprecia las emociones"], c: 1 },
+    { q: "Una enseñanza del pragmatismo es que:", o: ["Pensar basta sin actuar", "Las ideas deben demostrarse en la acción", "Todo es relativo"], c: 1 }
+];
+
+let nombre = "";
+
+function iniciar() {
+    const input = document.getElementById("nombre");
+    if (input.value.trim() === "") {
+        alert("Por favor escribe tu nombre.");
+        return;
+    }
+    nombre = input.value.trim();
+    document.getElementById("intro").classList.add("hidden");
+    const quiz = document.getElementById("quiz");
+    quiz.classList.remove("hidden");
+    const form = document.getElementById("formQuiz");
+    preguntas.forEach((p, i) => {
+        const div = document.createElement("div");
+        div.classList.add("question");
+        div.innerHTML = `<p><strong>${i+1}. ${p.q}</strong></p>` +
+            p.o.map((op, j) => `<label><input type="radio" name="p${i}" value="${j}"> ${op}</label><br>`).join("");
+        form.appendChild(div);
+    });
+}
+
+function finalizar() {
+    const respuestas = document.querySelectorAll("input[type=radio]:checked");
+    let puntaje = 0;
+    respuestas.forEach(r => {
+        const num = parseInt(r.name.slice(1));
+        if (parseInt(r.value) === preguntas[num].c) puntaje++;
+    });
+
+    actualizarRanking(nombre, puntaje);
+
+    document.getElementById("quiz").classList.add("hidden");
+    document.getElementById("resultado").classList.remove("hidden");
+    document.getElementById("mensaje").innerText =
+        `${nombre}, obtuviste ${puntaje} de ${preguntas.length} respuestas correctas.`;
+    mostrarRanking();
+}
+
+function actualizarRanking(nombre, puntaje) {
+    const data = JSON.parse(localStorage.getItem("rankingQuest") || "[]");
+    data.push({ nombre, puntaje });
+    data.sort((a,b) => b.puntaje - a.puntaje);
+    if (data.length > 10) data.length = 10;
+    localStorage.setItem("rankingQuest", JSON.stringify(data));
+}
+
+function mostrarRanking() {
+    const data = JSON.parse(localStorage.getItem("rankingQuest") || "[]");
+    let html = "<h3>Tabla de Clasificación</h3><table><tr><th>Puesto</th><th>Nombre</th><th>Puntaje</th></tr>";
+    data.slice(0,3).forEach((d,i) => {
+        const medalla = i===0 ? "🥇" : i===1 ? "🥈" : "🥉";
+        html += `<tr><td>${medalla}</td><td>${d.nombre}</td><td>${d.puntaje}</td></tr>`;
+    });
+    html += "</table>";
+    document.getElementById("ranking").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
